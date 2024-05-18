@@ -1,0 +1,7 @@
+/anything:
+  get:
+    - []
+/redirect-to:
+  get:
+    - url: 'https://httpbin.org/anything'
+    - url: 'https://httpbin.org/spec.json'

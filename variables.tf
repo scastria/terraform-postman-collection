@@ -1,0 +1,71 @@
+variable "openapi_url" {
+  type = string
+  description = "The URL of the OpenAPI spec to import"
+}
+variable "workspace_name" {
+  type = string
+  description = "The name of the Postman workspace to use/create"
+}
+variable "workspace_type" {
+  type = string
+  description = "The type of the Postman workspace to use/create"
+  default = "personal"
+}
+variable "create_workspace" {
+  type = bool
+  description = "Whether to create a new Postman workspace or use an existing one"
+  default = true
+}
+variable "collection_name" {
+  type = string
+  description = "The name of the Postman collection to create"
+}
+variable "collection_vars" {
+  type = map(string)
+  description = "Extra variables to set on the Postman collection"
+  default = {}
+}
+variable "url_base" {
+  type = string
+  description = "The base URL to use for all requests in the Postman collection"
+}
+variable "path_prefix_include_filter" {
+  type = set(string)
+  description = "A list of prefixes to filter paths by.  Matching prefix will INCLUDE the path.  Empty set means no filtering"
+  default = []
+}
+variable "method_exclude_filter" {
+  type = set(string)
+  description = "A list of LOWERCASE HTTP methods to filter requests by.  Matching method will EXCLUDE the request.  Empty set means no filtering"
+  default = ["trace"]
+}
+variable "automated_tests_folder" {
+  type = string
+  description = "The name of the folder to put automated tests in"
+  default = "tests"
+}
+variable "uncategorized_api_folder" {
+  type = string
+  description = "The name of the folder to put uncategorized endpoints in"
+  default = "Uncategorized APIs"
+}
+variable "default_param_values" {
+  type = map(map(map(string)))
+  description = "Default parameter values to use for requests.  The first key is the path, the second key is the method, and the third key is the parameter name"
+  default = {}
+}
+variable "test_script" {
+  type = list(string)
+  description = "The script to run for automated tests.  This is attached to the automated tests folder"
+  default = []
+}
+variable "tests" {
+  type = any
+  description = "Test requests to create in the automated tests folder.  The first key is the path, the second key is the method, then a list of maps of parameter names with values. This allows the same request to be tested more than once with different input parameter sets."
+  default = {}
+}
+variable "sort_hash" {
+  type = string
+  description = "A hash to use for sorting the collection.  Changing this will force a re-sort of the collection"
+  default = ""
+}
