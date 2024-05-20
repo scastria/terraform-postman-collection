@@ -25,6 +25,11 @@ variable "collection_vars" {
   description = "Extra variables to set on the Postman collection"
   default = {}
 }
+variable "collection_pre_request_script" {
+  type = list(string)
+  description = "The pre-request script to be attached to the Postman collection"
+  default = [""]
+}
 variable "url_base" {
   type = string
   description = "The base URL to use for all requests in the Postman collection"

@@ -18,6 +18,7 @@ resource "postman_collection" "Collection" {
       value = pvar.value
     }
   }
+  pre_request_script = var.collection_pre_request_script
 }
 resource "postman_folder" "CategoryFolder" {
   for_each = toset(local.categories)
