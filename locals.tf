@@ -17,6 +17,7 @@ locals {
     for q in lookup(local.oas["paths"][split("--", r)[1]][split("--", r)[2]], "parameters", []) : q if q["in"] == "query"
   ]}
   test_folders = [for p, pv in var.tests: p if (length(var.path_prefix_include_filter) == 0) || (anytrue([for prefix in var.path_prefix_include_filter: startswith(p, prefix)]))]
+  # path--method--index
   test_requests = flatten([for p in local.test_folders: [
     for m, mv in var.tests[p]: [
       for i, t in mv: "${p}--${m}--${i}"

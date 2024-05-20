@@ -1,6 +1,8 @@
 /anything:
   get:
     - []
+  delete:
+    - []
 /redirect-to:
   get:
     - url: 'https://httpbin.org/anything'

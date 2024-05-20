@@ -57,7 +57,12 @@ variable "default_param_values" {
 variable "test_script" {
   type = list(string)
   description = "The script to run for automated tests.  This is attached to the automated tests folder"
-  default = []
+  default = [""]
+}
+variable "test_request_test_scripts" {
+  type = map(map(list(string)))
+  description = "Additional test scripts to run for automated tests.  These are attached to the specific request itself.  The first key is the path, the second key is the method, and the value is the script"
+  default = {}
 }
 variable "tests" {
   type = any

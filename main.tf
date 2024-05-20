@@ -88,4 +88,5 @@ resource "postman_request" "TestRequest" {
       enabled = true
     }
   }
+  post_response_script = lookup(lookup(var.test_request_test_scripts, split("--", each.key)[0], {}), split("--", each.key)[1], [""])
 }
