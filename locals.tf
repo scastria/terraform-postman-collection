@@ -16,10 +16,17 @@ locals {
   query_params = {for r in local.requests : r => [
     for q in lookup(local.oas["paths"][split("--", r)[1]][split("--", r)[2]], "parameters", []) : q if q["in"] == "query"
   ]}
-  test_folders = [for p, pv in var.tests: p if (length(var.path_prefix_include_filter) == 0) || (anytrue([for prefix in var.path_prefix_include_filter: startswith(p, prefix)]))]
-  # path--method--index
-  test_requests = flatten([for p in local.test_folders: [
-    for m, mv in var.tests[p]: [
-      for i, t in mv: "${p}--${m}--${i}"
+  # status--group
+  test_status_group_folders = flatten([for s, sv in var.tests: [
+    for g, gv in sv: "${s}--${g}"
+  ]])
+  # status--group--path
+  test_request_folders = flatten([for sg in local.test_status_group_folders: [
+    for p, pv in var.tests[split("--", sg)[0]][split("--", sg)[1]]: "${split("--", sg)[0]}--${split("--", sg)[1]}--${p}" if (length(var.path_prefix_include_filter) == 0) || (anytrue([for prefix in var.path_prefix_include_filter: startswith(p, prefix)]))
+  ]])
+  # status--group--path--method--index
+  test_requests = flatten([for sgp in local.test_request_folders: [
+    for m, mv in var.tests[split("--", sgp)[0]][split("--", sgp)[1]][split("--", sgp)[2]]: [
+      for i, t in mv: "${split("--", sgp)[0]}--${split("--", sgp)[1]}--${split("--", sgp)[2]}--${m}--${i}"
   ]]])
 }

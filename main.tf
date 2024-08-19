@@ -34,13 +34,28 @@ resource "postman_folder" "RequestFolder" {
 resource "postman_folder" "ParentTestFolder" {
   collection_id = postman_collection.Collection.collection_id
   name = var.automated_tests_folder
-  post_response_script = var.test_script
+  post_response_script = lookup(var.test_scripts, "", [])
 }
-resource "postman_folder" "TestFolder" {
-  for_each = toset(local.test_folders)
+resource "postman_folder" "TestStatusFolder" {
+  for_each = var.tests
   collection_id = postman_collection.Collection.collection_id
   parent_folder_id = postman_folder.ParentTestFolder.folder_id
   name = each.key
+  post_response_script = lookup(var.test_scripts, "--${split("--", each.key)[0]}", [""])
+}
+resource "postman_folder" "TestStatusGroupFolder" {
+  for_each = toset(local.test_status_group_folders)
+  collection_id = postman_collection.Collection.collection_id
+  parent_folder_id = postman_folder.TestStatusFolder[split("--", each.key)[0]].folder_id
+  name = split("--", each.key)[1]
+  post_response_script = lookup(var.test_scripts, "--${split("--", each.key)[0]}--${split("--", each.key)[1]}", [""])
+}
+resource "postman_folder" "TestRequestFolder" {
+  for_each = toset(local.test_request_folders)
+  collection_id = postman_collection.Collection.collection_id
+  parent_folder_id = postman_folder.TestStatusGroupFolder["${split("--", each.key)[0]}--${split("--", each.key)[1]}"].folder_id
+  name = split("--", each.key)[2]
+  post_response_script = lookup(var.test_scripts, "--${split("--", each.key)[0]}--${split("--", each.key)[1]}${replace(split("--", each.key)[2], "/", "--")}", [""])
 }
 resource "postman_collection_sort" "CollectionSort" {
   collection_id = postman_collection.Collection.collection_id
@@ -51,7 +66,9 @@ resource "postman_collection_sort" "CollectionSort" {
     postman_folder.RequestFolder,
     postman_request.Request,
     postman_folder.ParentTestFolder,
-    postman_folder.TestFolder,
+    postman_folder.TestStatusFolder,
+    postman_folder.TestStatusGroupFolder,
+    postman_folder.TestRequestFolder,
     postman_request.TestRequest
   ]
 }
@@ -75,19 +92,19 @@ resource "postman_request" "Request" {
 resource "postman_request" "TestRequest" {
   for_each = toset(local.test_requests)
   collection_id = postman_collection.Collection.collection_id
-  folder_id = postman_folder.TestFolder[split("--", each.key)[0]].folder_id
-  name = "${split("--", each.key)[1]}-${split("--", each.key)[2]}"
-  method = upper(split("--", each.key)[1])
-  base_url = "{{url_base}}${split("--", each.key)[0]}"
+  folder_id = postman_folder.TestRequestFolder["${split("--", each.key)[0]}--${split("--", each.key)[1]}--${split("--", each.key)[2]}"].folder_id
+  name = "${split("--", each.key)[3]}-${split("--", each.key)[4]}"
+  method = upper(split("--", each.key)[3])
+  base_url = "{{url_base}}${split("--", each.key)[2]}"
   dynamic "query_param" {
-    for_each = toset(flatten([for qp, qpv in var.tests[split("--", each.key)[0]][split("--", each.key)[1]][split("--", each.key)[2]]: [
+    for_each = toset(flatten([for qp, qpv in var.tests[split("--", each.key)[0]][split("--", each.key)[1]][split("--", each.key)[2]][split("--", each.key)[3]][split("--", each.key)[4]]: [
       for i, qv in try([tostring(qpv)], tolist(qpv)): "${qp}--${i}"
     ]]))
     content {
       key = split("--", query_param.key)[0]
-      value = try(var.tests[split("--", each.key)[0]][split("--", each.key)[1]][split("--", each.key)[2]][split("--", query_param.key)[0]][split("--", query_param.key)[1]], var.tests[split("--", each.key)[0]][split("--", each.key)[1]][split("--", each.key)[2]][split("--", query_param.key)[0]])
+      value = try(var.tests[split("--", each.key)[0]][split("--", each.key)[1]][split("--", each.key)[2]][split("--", each.key)[3]][split("--", each.key)[4]][split("--", query_param.key)[0]][split("--", query_param.key)[1]], var.tests[split("--", each.key)[0]][split("--", each.key)[1]][split("--", each.key)[2]][split("--", each.key)[3]][split("--", each.key)[4]][split("--", query_param.key)[0]])
       enabled = true
     }
   }
-  post_response_script = lookup(lookup(var.test_request_test_scripts, split("--", each.key)[0], {}), split("--", each.key)[1], [""])
+  post_response_script = lookup(var.test_scripts, "--${split("--", each.key)[0]}--${split("--", each.key)[1]}${replace(split("--", each.key)[2], "/", "--")}--${split("--", each.key)[3]}", [""])
 }

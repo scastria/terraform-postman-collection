@@ -1,9 +1,11 @@
-/anything:
-  get:
-    - []
-  delete:
-    - []
-/redirect-to:
-  get:
-    - url: 'https://httpbin.org/anything'
-    - url: 'https://httpbin.org/spec.json'
+200:
+  group1:
+    /anything:
+      get:
+        - []
+      delete:
+        - []
+    /redirect-to:
+      get:
+        - url: 'https://httpbin.org/anything'
+        - url: 'https://httpbin.org/spec.json'

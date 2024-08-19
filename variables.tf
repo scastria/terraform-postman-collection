@@ -59,19 +59,14 @@ variable "default_param_values" {
   description = "Default parameter values to use for requests.  The first key is the path, the second key is the method, and the third key is the parameter name"
   default = {}
 }
-variable "test_script" {
-  type = list(string)
-  description = "The script to run for automated tests.  This is attached to the automated tests folder"
-  default = [""]
-}
-variable "test_request_test_scripts" {
-  type = map(map(list(string)))
-  description = "Additional test scripts to run for automated tests.  These are attached to the specific request itself.  The first key is the path, the second key is the method, and the value is the script"
+variable "test_scripts" {
+  type = map(list(string))
+  description = "Test scripts to run for automated tests.  These are attached to the matching folder or request.  The key is location within tests, and the value is the script"
   default = {}
 }
 variable "tests" {
   type = any
-  description = "Test requests to create in the automated tests folder.  The first key is the path, the second key is the method, then a list of maps of parameter names with values. This allows the same request to be tested more than once with different input parameter sets."
+  description = "Test requests to create in the automated tests folder.  The first key is the group, the second key is the status code, the third key is the path, the fourth key is the method, then a list of maps of parameter names with values. This allows the same request to be tested more than once with different input parameter sets."
   default = {}
 }
 variable "sort_hash" {
