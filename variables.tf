@@ -66,7 +66,7 @@ variable "test_scripts" {
 }
 variable "tests" {
   type = any
-  description = "Test requests to create in the automated tests folder.  The first key is the group, the second key is the status code, the third key is the path, the fourth key is the method, then a list of maps of parameter names with values. This allows the same request to be tested more than once with different input parameter sets."
+  description = "Test requests to create in the automated tests folder.  The first key is the status code, the second key is the group name, the third key is the path, the fourth key is the method, then a list of maps of parameter names with values. This allows the same request to be tested more than once with different input parameter sets."
   default = {}
 }
 variable "sort_hash" {
