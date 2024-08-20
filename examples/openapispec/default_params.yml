@@ -1,3 +1,6 @@
 /redirect-to:
   get:
-    url: 'https://httpbin.org/anything'
+    query_params:
+      url: "https://httpbin.org/anything"
+    headers:
+      x-request-internal: "12345"

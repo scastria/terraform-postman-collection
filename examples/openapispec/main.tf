@@ -21,7 +21,6 @@ module "openapispec" {
   openapi_url = "https://httpbin.org/spec.json"
   url_base = "https://httpbin.org"
   default_param_values = yamldecode(file("${path.module}/default_params.yml"))
-  test_script = split("\n", file("${path.module}/tests.js"))
   tests = yamldecode(file("${path.module}/tests.yml"))
   test_scripts = local.test_scripts
   # Force a resort every time just in case

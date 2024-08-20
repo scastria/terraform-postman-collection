@@ -2,10 +2,18 @@
   group1:
     /anything:
       get:
-        - []
+        -
+          query_params: {}
       delete:
-        - []
+        -
+          query_params: {}
     /redirect-to:
       get:
-        - url: 'https://httpbin.org/anything'
-        - url: 'https://httpbin.org/spec.json'
+        -
+          query_params:
+            url: 'https://httpbin.org/anything'
+          headers:
+            x-request-internal: "12345"
+        -
+          query_params:
+            url: 'https://httpbin.org/spec.json'

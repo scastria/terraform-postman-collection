@@ -84,8 +84,16 @@ resource "postman_request" "Request" {
     for_each = local.query_params[each.key]
     content {
       key = query_param.value["name"]
-      value = lookup(lookup(lookup(var.default_param_values, split("--", each.key)[1], {}), split("--", each.key)[2], {}), query_param.value["name"], "")
+      value = lookup(lookup(lookup(lookup(var.default_param_values, split("--", each.key)[1], {}), split("--", each.key)[2], {}), "query_params", {}), query_param.value["name"], "")
       enabled = lookup(query_param.value, "required", false)
+    }
+  }
+  dynamic "header" {
+    for_each = lookup(lookup(lookup(var.default_param_values, split("--", each.key)[1], {}), split("--", each.key)[2], {}), "headers", {})
+    content {
+      key = header.key
+      value = header.value
+      enabled = true
     }
   }
 }
@@ -97,12 +105,20 @@ resource "postman_request" "TestRequest" {
   method = upper(split("--", each.key)[3])
   base_url = "{{url_base}}${split("--", each.key)[2]}"
   dynamic "query_param" {
-    for_each = toset(flatten([for qp, qpv in var.tests[split("--", each.key)[0]][split("--", each.key)[1]][split("--", each.key)[2]][split("--", each.key)[3]][split("--", each.key)[4]]: [
+    for_each = toset(flatten([for qp, qpv in lookup(var.tests[split("--", each.key)[0]][split("--", each.key)[1]][split("--", each.key)[2]][split("--", each.key)[3]][split("--", each.key)[4]], "query_params", {}): [
       for i, qv in try([tostring(qpv)], tolist(qpv)): "${qp}--${i}"
     ]]))
     content {
       key = split("--", query_param.key)[0]
-      value = try(var.tests[split("--", each.key)[0]][split("--", each.key)[1]][split("--", each.key)[2]][split("--", each.key)[3]][split("--", each.key)[4]][split("--", query_param.key)[0]][split("--", query_param.key)[1]], var.tests[split("--", each.key)[0]][split("--", each.key)[1]][split("--", each.key)[2]][split("--", each.key)[3]][split("--", each.key)[4]][split("--", query_param.key)[0]])
+      value = try(var.tests[split("--", each.key)[0]][split("--", each.key)[1]][split("--", each.key)[2]][split("--", each.key)[3]][split("--", each.key)[4]]["query_params"][split("--", query_param.key)[0]][split("--", query_param.key)[1]], var.tests[split("--", each.key)[0]][split("--", each.key)[1]][split("--", each.key)[2]][split("--", each.key)[3]][split("--", each.key)[4]]["query_params"][split("--", query_param.key)[0]])
+      enabled = true
+    }
+  }
+  dynamic "header" {
+    for_each = lookup(var.tests[split("--", each.key)[0]][split("--", each.key)[1]][split("--", each.key)[2]][split("--", each.key)[3]][split("--", each.key)[4]], "headers", {})
+    content {
+      key = header.key
+      value = header.value
       enabled = true
     }
   }

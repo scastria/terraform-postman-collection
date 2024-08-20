@@ -55,8 +55,8 @@ variable "uncategorized_api_folder" {
   default = "Uncategorized APIs"
 }
 variable "default_param_values" {
-  type = map(map(map(string)))
-  description = "Default parameter values to use for requests.  The first key is the path, the second key is the method, and the third key is the parameter name"
+  type = any
+  description = "Default parameter values to use for requests.  The first key is the path, the second key is the method, then either query_params or headers, and the third key is the parameter or header name"
   default = {}
 }
 variable "test_scripts" {
