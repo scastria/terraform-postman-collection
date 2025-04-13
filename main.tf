@@ -80,6 +80,7 @@ resource "postman_request" "Request" {
   method = upper(split("--", each.key)[2])
   description = "${lookup(local.oas["paths"][split("--", each.key)[1]][split("--", each.key)[2]], "summary", "")}\n\n${lookup(local.oas["paths"][split("--", each.key)[1]][split("--", each.key)[2]], "description", "")}"
   base_url = "{{url_base}}${split("--", each.key)[1]}"
+  body = lookup(lookup(lookup(var.default_param_values, split("--", each.key)[1], {}), split("--", each.key)[2], {}), "body", null) == null ? null : jsonencode(lookup(lookup(lookup(var.default_param_values, split("--", each.key)[1], {}), split("--", each.key)[2], {}), "body", {}))
   dynamic "query_param" {
     for_each = local.query_params[each.key]
     content {
@@ -104,6 +105,7 @@ resource "postman_request" "TestRequest" {
   name = "${split("--", each.key)[3]}-${split("--", each.key)[4]}"
   method = upper(split("--", each.key)[3])
   base_url = "{{url_base}}${split("--", each.key)[2]}"
+  body = lookup(var.tests[split("--", each.key)[0]][split("--", each.key)[1]][split("--", each.key)[2]][split("--", each.key)[3]][split("--", each.key)[4]], "body", null) == null ? null : jsonencode(lookup(var.tests[split("--", each.key)[0]][split("--", each.key)[1]][split("--", each.key)[2]][split("--", each.key)[3]][split("--", each.key)[4]], "body", null))
   dynamic "query_param" {
     for_each = toset(flatten([for qp, qpv in lookup(var.tests[split("--", each.key)[0]][split("--", each.key)[1]][split("--", each.key)[2]][split("--", each.key)[3]][split("--", each.key)[4]], "query_params", {}): [
       for i, qv in try([tostring(qpv)], tolist(qpv)): "${qp}--${i}"
