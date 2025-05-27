@@ -58,6 +58,7 @@ resource "postman_folder" "TestRequestFolder" {
   post_response_script = lookup(var.test_scripts, "--${split("--", each.key)[0]}--${split("--", each.key)[1]}${replace(split("--", each.key)[2], "/", "--")}", [""])
 }
 resource "postman_collection_sort" "CollectionSort" {
+  count = var.enable_sort ? 1 : 0
   collection_id = postman_collection.Collection.collection_id
   case_sensitive = true
   hash = var.sort_hash
