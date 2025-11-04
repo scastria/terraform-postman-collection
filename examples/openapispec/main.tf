@@ -18,8 +18,8 @@ module "openapispec" {
   source = "../.."
   workspace_name = "Module"
   collection_name = "Collection"
-  openapi_url = "https://httpbin.org/spec.json"
-  url_base = "https://httpbin.org"
+  openapi_url = "https://httpbin.konghq.com/spec.json"
+  url_base = "https://httpbin.konghq.com"
   default_param_values = yamldecode(file("${path.module}/default_params.yml"))
   tests = yamldecode(file("${path.module}/tests.yml"))
   test_scripts = local.test_scripts

@@ -11,9 +11,9 @@
       get:
         -
           query_params:
-            url: 'https://httpbin.org/anything'
+            url: 'https://httpbin.konghq.com/anything'
           headers:
             x-request-internal: "12345"
         -
           query_params:
-            url: 'https://httpbin.org/spec.json'
+            url: 'https://httpbin.konghq.com/spec.json'
